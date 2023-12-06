@@ -41,13 +41,22 @@ def supprimer_fichier(chemin_fichier):
         print(f"Le fichier '{chemin_fichier}' n'existe pas.")
 
 
+def renommer_fichier(ancien_nom, nouveau_nom):
+    try:
+        os.rename(ancien_nom, nouveau_nom)
+        print(f"Fichier renommé de '{ancien_nom}' à '{nouveau_nom}'.")
+    except FileNotFoundError:
+        print(f"Le fichier '{ancien_nom}' n'existe pas.")
+
+
 def interface_utilisateur():
     while True:
         print("\nMenu:")
         print("1. Trier des fichiers par extension")
         print("2. Créer un fichier")
         print("3. Supprimer un fichier")
-        print("4. Quitter")
+        print("4. Renommer un fichier")
+        print("5. Quitter")
 
         choix = input("Choisissez une option (1/2/3/4): ")
 
@@ -62,6 +71,10 @@ def interface_utilisateur():
             chemin_fichier = input("Entrez le chemin vers le fichier à supprimer : ")
             supprimer_fichier(chemin_fichier)
         elif choix == "4":
+            ancien_nom = input("Entrez le chemin vers le fichier à renommer : ")
+            nouveau_nom = input("Entrez le nouveau nom du fichier : ")
+            renommer_fichier(ancien_nom, nouveau_nom)
+        elif choix == "5":
             break
         else:
             print("Option invalide. Veuillez choisir une option valide.")
