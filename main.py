@@ -1,5 +1,4 @@
 import os
-import argparse
 import shutil
 
 
@@ -29,16 +28,47 @@ def trier_par_extension(repertoire_source, repertoire_destination):
     print("Tri des fichiers par extension terminé.")
 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Tri des fichiers par type d'extension.")
-    parser.add_argument("source", help="Répertoire source des fichiers à trier.")
-    parser.add_argument("destination", help="Répertoire destination pour le tri par extension.")
-    return parser.parse_args()
+def creer_fichier(chemin_fichier):
+    with open(chemin_fichier, 'w'):
+        print(f"Fichier '{chemin_fichier}' créé avec succès.")
+
+
+def supprimer_fichier(chemin_fichier):
+    try:
+        os.remove(chemin_fichier)
+        print(f"Fichier '{chemin_fichier}' supprimé avec succès.")
+    except FileNotFoundError:
+        print(f"Le fichier '{chemin_fichier}' n'existe pas.")
+
+
+def interface_utilisateur():
+    while True:
+        print("\nMenu:")
+        print("1. Trier des fichiers par extension")
+        print("2. Créer un fichier")
+        print("3. Supprimer un fichier")
+        print("4. Quitter")
+
+        choix = input("Choisissez une option (1/2/3/4): ")
+
+        if choix == "1":
+            source = input("Entrez le chemin vers le répertoire source : ")
+            destination = input("Entrez le chemin vers le répertoire destination : ")
+            trier_par_extension(source, destination)
+        elif choix == "2":
+            chemin_fichier = input("Entrez le chemin vers le fichier à créer : ")
+            creer_fichier(chemin_fichier)
+        elif choix == "3":
+            chemin_fichier = input("Entrez le chemin vers le fichier à supprimer : ")
+            supprimer_fichier(chemin_fichier)
+        elif choix == "4":
+            break
+        else:
+            print("Option invalide. Veuillez choisir une option valide.")
 
 
 def main():
-    args = parse_arguments()
-    trier_par_extension(args.source, args.destination)
+    interface_utilisateur()
 
 
 if __name__ == "__main__":
