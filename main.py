@@ -1,5 +1,7 @@
 import os
 import shutil
+import tkinter as tk
+from tkinter import filedialog
 
 
 def trier_par_extension(repertoire_source, repertoire_destination):
@@ -49,7 +51,17 @@ def renommer_fichier(ancien_nom, nouveau_nom):
         print(f"Le fichier '{ancien_nom}' n'existe pas.")
 
 
+def choisir_dossier():
+    root = tk.Tk()
+    root.withdraw()  # Ne pas afficher la fenêtre principale
+
+    dossier_selectionne = filedialog.askdirectory(title="Sélectionnez un répertoire")
+    return dossier_selectionne
+
+
 def interface_utilisateur():
+    source = choisir_dossier()
+    destination = choisir_dossier()
     while True:
         print("\nMenu:")
         print("1. Trier des fichiers par extension")
@@ -61,8 +73,6 @@ def interface_utilisateur():
         choix = input("Choisissez une option (1/2/3/4): ")
 
         if choix == "1":
-            source = input("Entrez le chemin vers le répertoire source : ")
-            destination = input("Entrez le chemin vers le répertoire destination : ")
             trier_par_extension(source, destination)
         elif choix == "2":
             chemin_fichier = input("Entrez le chemin vers le fichier à créer : ")
