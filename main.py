@@ -1,6 +1,7 @@
 import os
 import shutil
 import tkinter as tk
+import re
 from tkinter import filedialog
 
 
@@ -43,13 +44,14 @@ def choisir_fichier():
 
 
 def creer_fichier(dossier, fichier):
-    chemin_fichier = os.path.join(dossier, fichier)
-    if chemin_fichier:
-        with open(chemin_fichier, 'w') as file:
-            if file:
-                print(f"Fichier '{chemin_fichier}' créé avec succès.")
-            else:
-                raise PermissionError(f"Impossible de créer le fichier '{chemin_fichier}'.")
+    if bool(re.match("^[a-zA-Z0-9_.]+$", fichier)):
+        chemin_fichier = os.path.join(dossier, fichier)
+        if chemin_fichier:
+            with open(chemin_fichier, 'w') as file:
+                if file:
+                    print(f"Fichier '{chemin_fichier}' créé avec succès.")
+                    return
+    raise OSError("Le nom du fichier est invalide.")
 
 
 def supprimer_fichier(supp):
@@ -58,15 +60,16 @@ def supprimer_fichier(supp):
         print(f"Fichier '{supp}' supprimé avec succès.")
 
 
-def renommer_fichier(ancien_nom):
+def renommer_fichier(ancien_nom, nouveau_nom):
     if ancien_nom:
-        nouveau_nom = input("Entrez le nouveau nom du fichier : ")
-        if nouveau_nom and nouveau_nom != ancien_nom:
-            # Utilisez os.rename pour renommer le fichier dans le même dossier
-            if os.path.exists(os.path.join(os.path.dirname(ancien_nom), nouveau_nom)):
+        nom = os.path.basename(ancien_nom)
+        if bool(re.match("^[a-zA-Z0-9_.]+$", nouveau_nom)):
+            if nouveau_nom and nouveau_nom != nom:
+                os.rename(ancien_nom, os.path.join(os.path.dirname(ancien_nom), nouveau_nom))
                 print(f"Fichier renommé de '{ancien_nom}' à '{nouveau_nom}'.")
-            else:
-                raise OSError(f"Le fichier '{ancien_nom}' n'existe pas.")
+                return
+            raise OSError("Le nouveau nom du fichier est invalide.")
+        raise OSError("Le nouveau nom du fichier est invalide.")
 
 
 def choisir_dossier():
@@ -81,34 +84,38 @@ def choisir_dossier():
 
 
 def interface_utilisateur():
-    while True:
-        print("\nMenu:")
-        print("1. Trier des fichiers par extension")
-        print("2. Créer un fichier")
-        print("3. Supprimer un fichier")
-        print("4. Renommer un fichier")
-        print("5. Quitter")
+    try:
+        while True:
+            print("\nMenu:")
+            print("1. Trier des fichiers par extension")
+            print("2. Créer un fichier")
+            print("3. Supprimer un fichier")
+            print("4. Renommer un fichier")
+            print("5. Quitter")
 
-        choix = input("Choisissez une option (1/2/3/4/5): ")
+            choix = input("Choisissez une option (1/2/3/4/5): ")
 
-        if choix == "1":
-            source = choisir_dossier()
-            destination = choisir_dossier()
-            trier_par_extension(source, destination)
-        elif choix == "2":
-            dossier = choisir_dossier()
-            fichier = input("Entrez le nom du fichier à créer : ")
-            creer_fichier(dossier, fichier)
-        elif choix == "3":
-            supp = choisir_fichier()
-            supprimer_fichier(supp)
-        elif choix == "4":
-            reno = choisir_fichier()
-            renommer_fichier(reno)
-        elif choix == "5":
-            break
-        else:
-            print("Option invalide. Veuillez choisir une option valide.")
+            if choix == "1":
+                source = choisir_dossier()
+                destination = choisir_dossier()
+                trier_par_extension(source, destination)
+            elif choix == "2":
+                dossier = choisir_dossier()
+                fichier = input("Entrez le nom du fichier à créer : ")
+                creer_fichier(dossier, fichier)
+            elif choix == "3":
+                supp = choisir_fichier()
+                supprimer_fichier(supp)
+            elif choix == "4":
+                reno = choisir_fichier()
+                nom = input("Entrez le nouveau nom du fichier : ")
+                renommer_fichier(reno, nom)
+            elif choix == "5":
+                break
+            else:
+                print("Option invalide. Veuillez choisir une option valide.")
+    except KeyboardInterrupt:
+        print("\nFermeture du programme.")
 
 
 def main():
