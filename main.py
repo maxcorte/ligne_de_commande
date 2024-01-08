@@ -4,32 +4,39 @@ import tkinter as tk
 import re
 from tkinter import filedialog
 
+repertoire_source_test = "D:\depart"
+repertoire_destination_test = "D:\destination"
+fichier_test = "C:\Desktop\test.txt"
+
 
 def trier_par_extension(repertoire_source, repertoire_destination):
-    if repertoire_source and repertoire_destination:
+    if os.path.exists(repertoire_source) and os.path.exists(repertoire_destination):
         # Assurez-vous que les répertoires de destination existent
         if not os.path.exists(repertoire_destination):
             os.makedirs(repertoire_destination)
-
         # Parcourez tous les fichiers du répertoire source
         for fichier in os.listdir(repertoire_source):
             chemin_fichier_source = os.path.join(repertoire_source, fichier)
+            if os.stat(chemin_fichier_source).st_mode & 0o222:
+                print("coucou")
+                # Assurez-vous que l'élément est un fichier
+                if os.path.isfile(chemin_fichier_source):
+                    # Obtenez l'extension du fichier
+                    _, extension = os.path.splitext(fichier)
+                    extension = extension.lower()
 
-            # Assurez-vous que l'élément est un fichier
-            if os.path.isfile(chemin_fichier_source):
-                # Obtenez l'extension du fichier
-                _, extension = os.path.splitext(fichier)
-                extension = extension.lower()
+                    # Créez un répertoire pour l'extension si nécessaire
+                    repertoire_extension = os.path.join(repertoire_destination, extension[1:])
+                    if not os.path.exists(repertoire_extension):
+                        os.makedirs(repertoire_extension)
 
-                # Créez un répertoire pour l'extension si nécessaire
-                repertoire_extension = os.path.join(repertoire_destination, extension[1:])
-                if not os.path.exists(repertoire_extension):
-                    os.makedirs(repertoire_extension)
-
-                # Déplacez le fichier dans le répertoire correspondant à l'extension
-                shutil.move(chemin_fichier_source, os.path.join(repertoire_extension, fichier))
-
-        print("Tri des fichiers par extension terminé.")
+                    # Déplacez le fichier dans le répertoire correspondant à l'extension
+                    shutil.move(chemin_fichier_source, os.path.join(repertoire_extension, fichier))
+                    print(f"Fichier '{fichier}' déplacé vers '{repertoire_extension}'.")
+            else:
+                raise PermissionError("Vous n'avez pas les droits pour accéder à ce fichier.")
+    else:
+        raise FileNotFoundError("Le répertoire source ou destination n'existe pas.")
 
 
 def choisir_fichier():
@@ -55,9 +62,14 @@ def creer_fichier(dossier, fichier):
 
 
 def supprimer_fichier(supp):
-    if supp:
-        os.remove(supp)
-        print(f"Fichier '{supp}' supprimé avec succès.")
+    if os.path.exists(supp):
+        print("coucou")
+        if supp:
+            os.remove(supp)
+            print(f"Fichier '{supp}' supprimé avec succès.")
+            return
+    else:
+        raise FileNotFoundError("Le fichier n'existe pas.")
 
 
 def renommer_fichier(ancien_nom, nouveau_nom):
@@ -124,7 +136,7 @@ def main():
 
 if __name__ == "__main__":
     try:
-        interface_utilisateur()
+        main()
     except FileNotFoundError as e:
         print(f"il manque un fichier {e}.")
     except PermissionError as e:
